@@ -4,6 +4,8 @@ Under development.
 
 This project contains a class `Steamserver` located in `steamserver.js`. Use it in the following way:
 ```js
+let steamServer = new SteamServer('81.19.209.74', 32012);
+
 steamServer.requestInfo().then((status) => {
   steamServer.requestInfo().then((status) => {
     if (status !== undefined) console.log(status);
