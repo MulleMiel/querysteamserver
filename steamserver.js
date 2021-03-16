@@ -7,6 +7,8 @@ class SteamServer {
     this.PORT = port;
 
     this.client = null;
+    this.requestsFailed = 0;
+    this.requestsFailedMax = 10;
 
     this.A2S_INFO_REQUEST = Buffer.from("FFFFFFFF54536F7572636520456E67696E6520517565727900", "hex");
     this.A2S_INFO_RESPONSE_HEADER = 0x49;
@@ -152,11 +154,18 @@ class SteamServer {
         if (request === 'rules') IS_REQUESTING = self.IS_REQUESTING_RULES;
 
         if (!IS_REQUESTING) {
-          resolve()
+          self.requestsFailed = 0;
+          resolve();
         } else {
           numRequests++;
           if (numRequests >= (200 / reqDelay)) { // 2 seconds timeout
-            resolve(`${request} request failed`);
+            if (self.requestsFailed < self.requestsFailedMax) {
+              self.requestsFailed++;
+              resolve(`${request} request failed`);
+              return;
+            }
+            resolve(false);
+            return;
           }
           setTimeout(checkRequesting, reqDelay); // this checks the flag every 20 milliseconds
         }
@@ -192,6 +201,13 @@ class SteamServer {
       playersList: this.convertBinPlayerList(),
       rulesAmount: parseInt("0x" + this.bin2Hex(this.rulesAmount.reverse())),
       rulesList: this.convertBinRulesList()
+    }
+  }
+
+  getPlayers(){
+    return {
+      playersAmount: this.playersAmount,
+      playersList: this.convertBinPlayerList()
     }
   }
 
