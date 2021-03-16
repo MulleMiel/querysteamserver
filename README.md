@@ -6,18 +6,22 @@ This project contains a class `Steamserver` located in `steamserver.js`. Use it 
 ```js
 let steamServer = new SteamServer('81.19.209.74', 32012);
 
-steamServer.requestInfo().then((status) => {
+steamServer.init().then(function () {
+
   steamServer.requestInfo().then((status) => {
-    if (status !== undefined) console.log(status);
-    steamServer.requestPlayer().then((status) => {
+    steamServer.requestInfo().then((status) => {
       if (status !== undefined) console.log(status);
-      steamServer.requestRules().then((status) => {
+      steamServer.requestPlayer().then((status) => {
         if (status !== undefined) console.log(status);
-        
-          console.log(steamServer.getProperties());
+        steamServer.requestRules().then((status) => {
+          if (status !== undefined) console.log(status);
+          
+            console.log(steamServer.getProperties());
+        }).catch(console.error);
       }).catch(console.error);
     }).catch(console.error);
-  }).catch(console.error);
+  });
+  
 });
 ```
 The methods `requestInfo()`, `requestPlayer()` and `requestRules()` all return a promise with the `status`. This will be uqual to *undefined* when the server responded with data, the object has then been updated with the new information, which can obtained with `getProperties()`, but you can add your own getters if you want. When the server didn't had a response, `status` will contain a message. No error is thrown, because you may want to use the method repeatedly, and just continue when there is no response.
