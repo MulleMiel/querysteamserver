@@ -44,90 +44,48 @@ let steamServer = new SteamServer('81.19.209.74', 32012); // Manteln public
 
 //   }).catch(console.error);
   
-  steamServer.init().then(function () {
-
-    
-    let infoRequestPromise =  new Promise((resolve, reject) => {
-      (function cycle(){
-
-        steamServer.requestInfo().then((status) => {
-          if (status !== undefined) {
-            cycle();
-          } else {
-            resolve();
-            return;
-          }
-        }).catch(console.error);
-  
-      })();
-    });
-
-    infoRequestPromise.then(function(){
-      const playersMax = steamServer.playersMax;
-      console.log(playersMax);
-
-      let players = new Array(playersMax).fill('');
+steamServer.init().then(function () {
 
 
+let infoRequestPromise =  new Promise((resolve, reject) => {
+  (function cycle(){
 
-      (function cycle(){
+    steamServer.requestInfo().then((status) => {
+      if (status !== undefined) {
+        cycle();
+      } else {
+        resolve();
+        return;
+      }
+    }).catch(console.error);
 
-        steamServer.requestPlayer().then((status) => {
-          if (status !== undefined) console.log(status);
+  })();
+});
 
-          const playerProperties = steamServer.getPlayers();
+infoRequestPromise.then(function(){
+
+  (function cycle(){
+
+    steamServer.requestPlayer().then((status) => {
+      if (status !== undefined) console.log(status);
+
+      let players = steamServer.getPlayersLobby();
+
+      let playersString = '';
+      for (let j = 0; j < players.length; j++) {
+        playersString += `${('0' + (j + 1)).slice(-2)}: ${players[j]}\n`;
+      }
+
+      console.log(playersString);
 
 
-          for (let i = 0; i < players.length; i++) {
-            let hasLeft = true;
+      // setTimeout(cycle, 50);
+      cycle();
+    }).catch(console.error);
 
-            for (let j = 0; j < playerProperties.playersList.length; j++) {
-              if (players[i] === playerProperties.playersList[j].name) {
-                hasLeft = false;
-                break;
-              }
-            }
+  })();
+});
 
-            if (hasLeft) {
-              players[i] = '';
-            }
-          }
-          
-          for (let i = 0; i < playerProperties.playersList.length; i++) {
-            let isNew = true;
-            let emptyIndex = players.length - 1;
-            let emptyIndexFound = false;
 
-            for (let j = 0; j < players.length; j++) {
-              
-              if (players[j] === playerProperties.playersList[i].name) {
-                isNew = false;
-              }
-              if (players[j] === '' && !emptyIndexFound) {
-                emptyIndex = j;
-                emptyIndexFound = true;
-              }
-            }
 
-            if (isNew) {
-              players[emptyIndex] = playerProperties.playersList[i].name;
-            }
-          }
-
-          let playersString = '';
-          for (let j = 0; j < players.length; j++) {
-            playersString += `${('0' + (j + 1)).slice(-2)}: ${players[j]}\n`;
-          }
-          console.log(playersString);
-  
-  
-          // setTimeout(cycle, 50);
-          cycle();
-        }).catch(console.error);
-  
-      })();
-    });
-
-    
-
-  }).catch(console.error);
+}).catch(console.error);

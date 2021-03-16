@@ -51,6 +51,8 @@ class SteamServer {
     this.playersList = null; // [byte, string, long, float]
     this.rulesAmount = null; // short
     this.rulesList = null; // [string, string]
+
+    this.playersLobby = null;
   }
 
   init() {
@@ -209,6 +211,49 @@ class SteamServer {
       playersAmount: this.playersAmount,
       playersList: this.convertBinPlayerList()
     }
+  }
+
+  getPlayersLobby() {
+    this.playersLobby = new Array(this.playersMax).fill('');
+    const playerProperties = this.getPlayers();
+
+    for (let i = 0; i <  this.playersLobby.length; i++) {
+      let hasLeft = true;
+
+      for (let j = 0; j < playerProperties.playersList.length; j++) {
+        if ( this.playersLobby[i] === playerProperties.playersList[j].name) {
+          hasLeft = false;
+          break;
+        }
+      }
+
+      if (hasLeft) {
+        this.playersLobby[i] = '';
+      }
+    }
+    
+    for (let i = 0; i < playerProperties.playersList.length; i++) {
+      let isNew = true;
+      let emptyIndex =  this.playersLobby.length - 1;
+      let emptyIndexFound = false;
+
+      for (let j = 0; j <  this.playersLobby.length; j++) {
+        
+        if ( this.playersLobby[j] === playerProperties.playersList[i].name) {
+          isNew = false;
+        }
+        if ( this.playersLobby[j] === '' && !emptyIndexFound) {
+          emptyIndex = j;
+          emptyIndexFound = true;
+        }
+      }
+
+      if (isNew) {
+        this.playersLobby[emptyIndex] = playerProperties.playersList[i].name;
+      }
+    }
+
+    return this.playersLobby;
   }
 
   getKeywords(){
