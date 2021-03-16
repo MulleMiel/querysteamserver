@@ -24,7 +24,7 @@ steamServer.init().then(function () {
   
 }).catch(console.error);
 ```
-The methods `requestInfo()`, `requestPlayer()` and `requestRules()` all return a promise with the `status`. This will be uqual to *undefined* when the server responded with data, the object has then been updated with the new information, which can obtained with `getProperties()`, but you can add your own getters if you want. When the server didn't had a response, `status` will contain a message. No error is thrown, because you may want to use the method repeatedly, and just continue when there is no response.
+The methods `requestInfo()`, `requestPlayer()` and `requestRules()` all return a promise with the `status`. This will be uqual to *undefined* when the server responded with data, the object has then been updated with the new information, which can obtained with `getProperties()`, but you can add your own getters if you want. When the server didn't had a response, `status` will contain a message. No error is thrown, because you may want to use the method repeatedly, and just continue when there is no response. When `status` is equal to *false*, it means that there is no connection with the server, or to be precise: the server didn't respond with data after sending 10 requests in a row.
 
 Here is an example when you just request data in a repeated cycle:
 
