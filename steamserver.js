@@ -59,8 +59,7 @@ class SteamServer {
     return new Promise((resolve, reject) => {
       this.client = dgram.createSocket('udp4');
       this.client.on("message", function(message, rinfo) {
-        let buffer =  Buffer.from(message, "hex");
-        buffer = this.bufferToArray(buffer);
+        let buffer =  Array.from(Buffer.from(message, "hex"));
         const header = this.unpackHEADER(buffer);
 
         if (this.A2S_INFO_RESPONSE_HEADER === header) {
@@ -103,7 +102,7 @@ class SteamServer {
 
       this.client.on("error", function(err) {
         console.log("error: ",err);
-        reject(error);
+        reject(err);
       });
       this.client.bind(3000);
     });
@@ -146,8 +145,8 @@ class SteamServer {
   getRequestPromise(request) {
     return new Promise((resolve, reject) => {
       let self = this;
-      let numRequests = 0;
-      let reqDelay = 20;
+      let numDelays = 0;
+      const reqDelay = 20;
 
       function checkRequesting() {
         let IS_REQUESTING;
@@ -159,8 +158,8 @@ class SteamServer {
           self.requestsFailed = 0;
           resolve();
         } else {
-          numRequests++;
-          if (numRequests >= (200 / reqDelay)) { // 2 seconds timeout
+          numDelays++;
+          if (numDelays >= (200 / reqDelay)) { // 200ms seconds timeout
             if (self.requestsFailed < self.requestsFailedMax) {
               self.requestsFailed++;
               resolve(`${request} request failed`);
@@ -176,7 +175,7 @@ class SteamServer {
     });
   }
 
-  getProperties(){
+  getInfo(){
     
     return {
       protocol: this.protocol,
@@ -198,11 +197,7 @@ class SteamServer {
       portSpec: this.portSpec,
       nameSpec: this.nameSpec,
       keywords: this.bin2String(this.keywords),
-      gameid: parseInt("0x" + this.bin2Hex(this.gameid.reverse())),
-      playersAmount: this.playersAmount,
-      playersList: this.convertBinPlayerList(),
-      rulesAmount: parseInt("0x" + this.bin2Hex(this.rulesAmount.reverse())),
-      rulesList: this.convertBinRulesList()
+      gameid: parseInt("0x" + this.bin2Hex(this.gameid.reverse()))
     }
   }
 
@@ -213,8 +208,14 @@ class SteamServer {
     }
   }
 
+  getRules(){
+    return {
+      rulesAmount: parseInt("0x" + this.bin2Hex(this.rulesAmount.reverse())),
+      rulesList: this.convertBinRulesList()
+    }
+  }
+
   getPlayersLobby() {
-    this.playersLobby = new Array(this.playersMax).fill('');
     const playerProperties = this.getPlayers();
 
     for (let i = 0; i <  this.playersLobby.length; i++) {
@@ -256,14 +257,6 @@ class SteamServer {
     return this.playersLobby;
   }
 
-  getKeywords(){
-    return this.bin2String(this.keywords);
-  }
-
-  bufferToArray(buffer) {
-    return Array.prototype.slice.call(buffer, 0);
-  }
-
   unpackHEADER(buffer) {
     buffer.splice(0, 4); // 4 bytes
     return this.unpack('byte', buffer); // byte
@@ -292,7 +285,7 @@ class SteamServer {
     this.keywords = extraFlag & 0x20 ? this.unpack('string', buffer) : false;
     this.gameid = extraFlag & 0x01 ? this.unpack('long long', buffer) : false;
 
-    return buffer;
+    this.playersLobby = new Array(this.playersMax).fill('');
   }
 
   unpackPLAYER (buffer) {
