@@ -48,7 +48,7 @@ steamServer.init().then(function () {
 }).catch(console.error);
 ```
 
-Some properties contain game specicific information. For this a new Class can be added that extends the functionality of `SteamServer`. This project contains a subclass for the game Wreckfest, called `WreckfestServer`. It is provided with the method `getLobbySettings()` and returns current lobbysettings for your Wreckfest server. These settings are located in the text-string `keywords`, that is retreived by calling `requestInfo()`. The file `wreckfestkeywords.js` contains all definitions to decipher the lobbysettings and probably needs to be updated when Wreckfest adds new cars, tracks or server functionality. The following example demonstrates how you can use the `WreckfestServer` class.
+Some properties contain game specific information. For this a new Class can be added that extends the functionality of `SteamServer`. This project contains a subclass for the game Wreckfest, called `WreckfestServer`. It is provided with the method `getLobbySettings()` and returns current lobbysettings for your Wreckfest server. These settings are located in the text-string `keywords`, that is retreived by calling `requestInfo()`. The file `wreckfestkeywords.js` contains all definitions to decipher the lobbysettings and probably needs to be updated when Wreckfest adds new cars, tracks or server functionality. The following example demonstrates how you can use the `WreckfestServer` class.
 
 ```js
 const WreckfestServer = require("./wreckfestserver");

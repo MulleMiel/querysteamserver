@@ -41,35 +41,35 @@ class WreckfestServer extends SteamServer {
   }
   
   getLobbySettings(){
-    if (this.keywords) {
-      const convertedKeywords = this.convertKeywords();
+    if (!this.keywords) return false;
 
-      return {
-        updateFrequency: convertedKeywords[0].value,
-        racingStatus: convertedKeywords[1].value,
-        track: convertedKeywords[2].value,
-        modCount: convertedKeywords[3].value,
-        gamemode: convertedKeywords[4].value,
-        teamCount: convertedKeywords[5].value,
-        weather: convertedKeywords[6].value,
-        laps: convertedKeywords[7].value,
-        reverseLimiter: convertedKeywords[9].value.reverseLimiter,
-        specialVehicles: convertedKeywords[9].value.specialVehicles,
-        carReset: convertedKeywords[9].value.carReset,
-        carClassRestriction: convertedKeywords[10].value,
-        carTypeRestriction: convertedKeywords[11].value,
-        botCount: convertedKeywords[12].value,
-        timeLimit: convertedKeywords[13].value,
-        eliminationInterval: convertedKeywords[14].value,
-        multiRaceRoundIndex: convertedKeywords[15].value,
-        steamport: convertedKeywords[16].value,
-        gameport: convertedKeywords[17].value,
-        vehicleDamageMode: convertedKeywords[18].value,
-        carResetDelay: convertedKeywords[19].value,
-        excludeFromQuickplay: convertedKeywords[20].value,
-      }
-    } else {
-      return false;
+    const convertedKeywords = this.convertKeywords();
+
+    if (convertedKeywords.length < wreckfestKeywordsDefinitions.length) return false;
+
+    return {
+      updateFrequency: convertedKeywords[0].value,
+      racingStatus: convertedKeywords[1].value,
+      track: convertedKeywords[2].value,
+      modCount: convertedKeywords[3].value,
+      gamemode: convertedKeywords[4].value,
+      teamCount: convertedKeywords[5].value,
+      weather: convertedKeywords[6].value,
+      laps: convertedKeywords[7].value,
+      reverseLimiter: convertedKeywords[9].value.reverseLimiter,
+      specialVehicles: convertedKeywords[9].value.specialVehicles,
+      carReset: convertedKeywords[9].value.carReset,
+      carClassRestriction: convertedKeywords[10].value,
+      carTypeRestriction: convertedKeywords[11].value,
+      botCount: convertedKeywords[12].value,
+      timeLimit: convertedKeywords[13].value,
+      eliminationInterval: convertedKeywords[14].value,
+      multiRaceRoundIndex: convertedKeywords[15].value,
+      steamport: convertedKeywords[16].value,
+      gameport: convertedKeywords[17].value,
+      vehicleDamageMode: convertedKeywords[18].value,
+      carResetDelay: convertedKeywords[19].value,
+      excludeFromQuickplay: convertedKeywords[20].value,
     }
   }
 }

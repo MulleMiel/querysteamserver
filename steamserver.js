@@ -1,5 +1,5 @@
 const dgram = require('dgram');
-
+require('dotenv').config();
 
 class SteamServer {
   constructor(host, port) {
@@ -104,7 +104,7 @@ class SteamServer {
         console.log("error: ",err);
         reject(err);
       });
-      this.client.bind(3000);
+      this.client.bind(process.env.UDP_PORT);
     });
   }
 
@@ -353,6 +353,8 @@ class SteamServer {
       convertedPlayerList.push({
         index: this.playersList[i].index,
         name: this.bin2String(this.playersList[i].name),
+        encoded: this.bin2URIEncode(this.playersList[i].name),
+        hex: this.bin2Hex(this.playersList[i].name),
         score: parseInt("0x" + this.bin2Hex(this.playersList[i].score.slice().reverse())),
         duration: parseInt("0x" + this.bin2Hex(this.playersList[i].duration.slice().reverse()))
       });
@@ -361,8 +363,17 @@ class SteamServer {
   }
 
   bin2String(array) {
+    if (!array) return "";
     if (array[array.length - 1] === 0x00) array.pop();
     return String.fromCharCode.apply(String, array);
+  }
+
+  bin2URIEncode(array) {
+    let string = "";
+    for (let i = 0; i < array.length; i++) {
+      string += `%${array[i].toString(16)}`;
+    }
+    return string;
   }
   
   bin2Hex(byteArray) {
